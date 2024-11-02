@@ -8,7 +8,7 @@ const MONGO_STRING = process.env.DATABASE_URL;
 const PORT = process.env.PORT;
 
 mongoose.connect(MONGO_STRING).then(() => console.log("DB connected"));
-
+// test
 app.use(express.json());
 
 app.use("/api", routes);
