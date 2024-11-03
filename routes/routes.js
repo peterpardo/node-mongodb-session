@@ -3,8 +3,23 @@ const bcrypt = require("bcrypt");
 const UserModel = require("../User");
 const router = express.Router();
 
-router.get("/users", (req, res) => {
-  res.json({ users: [] });
+router.get("/users", async (req, res) => {
+  try {
+    const users = await UserModel.find({});
+    res.json({ users });
+  } catch (err) {
+    res.json({ message: "Error in getting users." });
+  }
+});
+
+router.get("/users/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await UserModel.findById(id);
+    res.json({ user });
+  } catch (err) {
+    res.json({ message: `Error finding user id: ${id}` });
+  }
 });
 
 router.post("/users", async (req, res) => {
