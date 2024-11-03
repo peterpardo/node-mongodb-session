@@ -42,9 +42,15 @@ router.post("/users", async (req, res) => {
   }
 });
 
-router.patch("/users/:id", (req, res) => {
+router.patch("/users/:id", async (req, res) => {
+  try {
+    const { email } = req.body;
   const id = req.params.id;
-  res.json({ message: `User updated, id: ${id}` });
+    await UserModel.findByIdAndUpdate(id, { email });
+    res.json({ message: "User updated." });
+  } catch (err) {
+    res.json({ message: "Error finding user" });
+  }
 });
 
 router.delete("/users/:id", (req, res) => {
