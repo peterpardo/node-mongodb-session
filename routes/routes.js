@@ -52,9 +52,14 @@ router.patch("/users/:id", async (req, res) => {
   }
 });
 
-router.delete("/users/:id", (req, res) => {
-  const id = req.params.id;
-  res.json({ message: `User deleted, id: ${id}` });
+router.delete("/users/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    await UserModel.findByIdAndDelete(id);
+    res.json({ message: `User deleted, id: ${id}` });
+  } catch (err) {
+    res.json({ message: "Error in deleting user..." });
+  }
 });
 
 module.exports = router;
