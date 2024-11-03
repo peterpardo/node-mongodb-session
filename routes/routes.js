@@ -37,7 +37,6 @@ router.post("/users", async (req, res) => {
 
     res.json({ message: "User created.", data: user });
   } catch (err) {
-    console.error("Error creating user: ", err.message);
     res.json({ message: "Error creating user..." });
   }
 });
@@ -45,7 +44,7 @@ router.post("/users", async (req, res) => {
 router.patch("/users/:id", async (req, res) => {
   try {
     const { email } = req.body;
-  const id = req.params.id;
+    const id = req.params.id;
     await UserModel.findByIdAndUpdate(id, { email });
     res.json({ message: "User updated." });
   } catch (err) {
