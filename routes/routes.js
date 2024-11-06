@@ -3,6 +3,24 @@ const bcrypt = require("bcrypt");
 const UserModel = require("../User");
 const router = express.Router();
 
+function checkIsLoggedIn(req, res, next) {
+  if (req.session.email) {
+    return next();
+  } else {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+}
+
+function checkAdminRole(req, res, next) {
+  if (req.session.role === "admin") {
+    return next();
+  } else {
+    return res.status(403).json({ message: "Access denied: Admins only." });
+  }
+}
+
+router.use(checkIsLoggedIn);
+
 router.get("/users", async (req, res) => {
   try {
     const users = await UserModel.find({});
@@ -22,7 +40,7 @@ router.get("/users/:id", async (req, res) => {
   }
 });
 
-router.post("/users", async (req, res) => {
+router.post("/users", checkAdminRole, async (req, res) => {
   try {
     const { email, password } = req.body;
     const saltRounds = parseInt(process.env.SALT_ROUNDS);
@@ -59,7 +77,7 @@ router.patch("/users/:id", async (req, res) => {
   }
 });
 
-router.delete("/users/:id", async (req, res) => {
+router.delete("/users/:id", checkAdminRole, async (req, res) => {
   try {
     const id = req.params.id;
     await UserModel.findByIdAndDelete(id);
