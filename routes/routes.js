@@ -28,9 +28,16 @@ router.post("/users", async (req, res) => {
     const saltRounds = parseInt(process.env.SALT_ROUNDS);
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
+    const existingUser = await UserModel.findOne({ email });
+
+    if (existingUser) {
+      return res.json({ message: "Email already exists." });
+    }
+
     const user = new UserModel({
       email,
       password: hashedPassword,
+      role: "user",
     });
 
     await user.save();
