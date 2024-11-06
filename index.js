@@ -52,6 +52,7 @@ app.post("/login", async (req, res) => {
             throw new Error(err);
           }
           req.session.email = user.email;
+          req.session.role = user.role;
           res.json({ message: "Login success." });
         });
       } else {
