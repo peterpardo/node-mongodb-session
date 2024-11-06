@@ -22,8 +22,8 @@ store.on("error", (error) => {
 
 app.use(
   session({
+    name: "test_cookie_name",
     secret: "secret_key",
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
     store: store,
     resave: false,
     saveUninitialized: false,
@@ -60,6 +60,18 @@ app.post("/login", async (req, res) => {
     }
   } catch (err) {
     res.json({ message: err.message });
+  }
+});
+
+app.get("/logout", (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      const message = err ?? "Session destroyed.";
+      res.json({ message });
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "Somthing went wrong" });
   }
 });
 
