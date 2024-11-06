@@ -77,6 +77,11 @@ app.get("/logout", (req, res) => {
 
 app.use("/api", routes);
 
+// Error handler
+app.use((err, req, res, next) => {
+  res.status(500).send("Error: ", err);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at port:${PORT}`);
 });
