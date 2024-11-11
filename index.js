@@ -38,6 +38,18 @@ app.get("/", (req, res) => {
   res.json({ session: req.session });
 });
 
+app.get("/check-session", async (req, res) => {
+  if (req.session.user) {
+    res.json({
+      isLoggedIn: true,
+      user: req.session.user,
+      role: req.session.role,
+    });
+  } else {
+    res.status(409).json({ message: "Unauthorized" });
+  }
+});
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -53,6 +65,7 @@ app.post("/login", async (req, res) => {
           }
           req.session.email = user.email;
           req.session.role = user.role;
+          req.session.isLoggedIn = true;
           res.json({ message: "Login success." });
         });
       } else {
