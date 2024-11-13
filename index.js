@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const cors = require("cors");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const mongoose = require("mongoose");
 const routes = require("./routes/routes");
@@ -33,6 +34,12 @@ app.use(
 mongoose.connect(MONGO_STRING).then(() => console.log("DB connected"));
 
 app.use(express.json());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.get("/", (req, res) => {
   res.json({ session: req.session });
@@ -66,7 +73,14 @@ app.post("/login", async (req, res) => {
           req.session.email = user.email;
           req.session.role = user.role;
           req.session.isLoggedIn = true;
-          res.json({ message: "Login success." });
+          res.json({
+            message: "Login success.",
+            user: {
+              email: user.email,
+              role: user.role,
+              isLoggedIn: true,
+            },
+          });
         });
       } else {
         res.json({ message: "Invalid credentials" });
