@@ -28,6 +28,11 @@ app.use(
     store: store,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+    },
   })
 );
 
@@ -46,10 +51,10 @@ app.get("/", (req, res) => {
 });
 
 app.get("/check-session", async (req, res) => {
-  if (req.session.user) {
+  if (req.session && req.session.email) {
     res.json({
       isLoggedIn: true,
-      user: req.session.user,
+      email: req.session.email,
       role: req.session.role,
     });
   } else {
@@ -83,8 +88,10 @@ app.post("/login", async (req, res) => {
           });
         });
       } else {
-        res.json({ message: "Invalid credentials" });
+        res.status(401).json({ message: "Invalid credentials" });
       }
+    } else {
+      res.status(401).json({ message: "User does not exist" });
     }
   } catch (err) {
     res.json({ message: err.message });
@@ -107,7 +114,7 @@ app.use("/api", routes);
 
 // Error handler
 app.use((err, req, res, next) => {
-  res.status(500).send("Error: ", err);
+  console.log(err);
 });
 
 app.listen(PORT, () => {
